@@ -1,0 +1,64 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://192.168.10.21:2375
+  DOCKER_TLS_CERTDIR: ""
+  REGISTRY_URL: 192.168.10.20:8083  
+  DOCKER_REGISTRY_IMAGE_DEV: 192.168.10.20:8083/bitazar/dev/$CI_PROJECT_NAME:latest
+  DOCKER_REGISTRY_IMAGE_PROD: 192.168.10.20:8083/bitazar/prod/$CI_PROJECT_NAME:latest
+  GIT_STRATEGY: clone
+
+stages:
+  - push-dev
+  - deploy-dev
+  - push-prod
+  - deploy-prod
+
+#Pushes
+
+push-dev:
+  stage: push-dev
+  tags:
+    - kando
+  image: 192.168.10.20:8083/kando/docker:dind
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL
+  script:
+    - docker build -t $DOCKER_REGISTRY_IMAGE_DEV .
+    - docker push $DOCKER_REGISTRY_IMAGE_DEV
+  only:
+    - dev
+
+push-prod:
+  stage: push-prod
+  tags:
+    - kando
+  image: 192.168.10.20:8083/kando/docker:dind
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_URL
+  script:
+    - docker build -t $DOCKER_REGISTRY_IMAGE_PROD .
+    - docker push $DOCKER_REGISTRY_IMAGE_PROD
+  only:
+    - main      
+
+#Deploy
+
+deploy-dev:
+  stage: deploy-dev
+  tags:
+    - kando
+  image: 192.168.10.20:8083/kando/basecd:latest
+  script:
+    - ssh -o StrictHostKeyChecking=no -t root@192.168.10.10 "kubectl delete po -l app=$CI_PROJECT_NAME -n bitazar-dev"
+  only:
+    - dev
+
+deploy-prod:
+  stage: deploy-prod
+  tags:
+    - kando
+  image: 192.168.10.20:8083/kando/basecd:latest
+  script:
+    - ssh -o StrictHostKeyChecking=no -t root@192.168.50.16 "kubectl delete po -l app=$CI_PROJECT_NAME -n bitazar-prod"
+  only:
+    - main

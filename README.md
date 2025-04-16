@@ -9,3 +9,9 @@
 | Method | Endpoint               | Description                           |
 |--------|------------------------|---------------------------------------|
 | **GET**   | `/reports/profit-loss`         | API for calculating the profit or loss status of a user's account. |
+
+## Homepage
+|| | |
+|-----------|-----------|-----------|
+| ![Homepage 1](docs-assets/screenshots/screenshot1.png) | ![Homepage 2](docs-assets/screenshots/screenshot2.png) | ![Homepage 3](docs-assets/screenshots/screenshot3.png) |
+

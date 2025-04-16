@@ -5,7 +5,7 @@
 
 ## API Endpoint
 
-### 🔹 **Books**
+### 🔹 **profit-and-loss**
 | Method | Endpoint               | Description                           |
 |--------|------------------------|---------------------------------------|
-| **GET**   | `/`         | . |
+| **GET**   | `/reports/profit-loss`         | API for calculating the profit or loss status of a user's account. |
